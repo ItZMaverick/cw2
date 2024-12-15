@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_CREDS = credentials('docker') // Use Jenkins stored credentials
+        DOCKERHUB_CREDS = credentials('docker') // DockerHub credentials
     }
     stages {
         stage('Docker Image Build') {
@@ -43,6 +43,22 @@ pipeline {
                     sh '''
                     echo "$DOCKERHUB_CREDS_PSW" | docker login -u "$DOCKERHUB_CREDS_USR" --password-stdin
                     docker push 1uke04/cw2-server:latest
+                    '''
+                }
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            agent {
+                sshagent(['my-ssh-key']) // Use Jenkins stored SSH credentials
+            }
+            steps {
+                script {
+                    echo "Deploying application to Kubernetes..."
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no user@remote-server "
+                    kubectl set image deployment/cw2-server cw2-server=1uke04/cw2-server:latest --record &&
+                    kubectl rollout status deployment/cw2-server
+                    "
                     '''
                 }
             }
