@@ -48,7 +48,7 @@ pipeline {
             }
         }
         stage('Deploy to Kubernetes') {
-            agent {
+            script {
                 sshagent(['my-ssh-key']) // Use Jenkins stored SSH credentials
             }
             steps {
