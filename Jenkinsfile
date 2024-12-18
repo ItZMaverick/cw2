@@ -52,7 +52,7 @@ pipeline {
                 script {
                     sshagent(['my-ssh-key']) { // Use Jenkins stored SSH credentials
                         sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@34.228.80.252 "
+                        ssh -o StrictHostKeyChecking=no ubuntu@18.212.89.121 "
                         kubectl set image deployment/cw2-server cw2-server=1uke04/cw2-server:latest --record &&
                         kubectl rollout status deployment/cw2-server
                         "
