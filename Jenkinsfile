@@ -51,15 +51,21 @@ pipeline {
             steps {
                 script {
                     sshagent(['my-ssh-key']) { // Use Jenkins stored SSH credentials
-                        sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@18.212.89.121 "
-                        kubectl set image deployment/cw2-server cw2-server-container=1uke04/cw2-server:latest --record -n my-namespace &&
-                        kubectl rollout status deployment/cw2-server
-                        "
-                        '''
+			sh '''
+			ssh -o StrictHostKeyChecking=no ubuntu@18.212.89.121 '
+			    set -e
+			    echo "Checking deployments:"
+			    kubectl get deployments -n my-namespace
+			    echo "Attempting to update deployment:"
+			    kubectl set image deployment/cw2-server cw2-server-container=1uke04/cw2-server:latest --record -n my-namespace
+			    echo "Checking rollout status:"
+			    kubectl rollout status deployment/cw2-server -n my-namespace
+			'
+			'''
                     }
                 }
             }
         }
     }
 }
+
